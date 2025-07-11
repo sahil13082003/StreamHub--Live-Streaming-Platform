@@ -9,6 +9,7 @@ import StreamPage from "./pages/StreamPage"
 // import Profile from "./pages/Profile"
 import "./App.css"
 import Navbar from "./components/ui/Navbar"
+import ProfilePage from "./pages/Profile"
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               {/* <Route path="/dashboard" element={<Dashboard />} /> */}
               <Route path="/stream" element={<StreamPage />} />
-              {/* <Route path="/profile" element={<Profile />} /> */}
+              <Route path="/profile" element={<ProfilePage />} />
             </Routes>
           </div>
         </Router>

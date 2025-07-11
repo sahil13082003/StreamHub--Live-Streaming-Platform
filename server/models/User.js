@@ -5,10 +5,61 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["viewer", "streamer", "admin"], default: "viewer" },
-  profilePicture: { type: String, default: "" },
-  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+profilePicture: { 
+    type: String, 
+    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png" 
+  },
+  // Profile Information
+  profilePicture: { 
+    type: String, 
+    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png" 
+  },
+  bannerImage: {
+    type: String,
+    default: ""
+  },
+  displayName: {
+    type: String,
+    trim: true,
+    maxlength: 50
+  },
+  bio: {
+    type: String,
+    maxlength: 500,
+    default: ""
+  },
+  location: {
+    type: String,
+    maxlength: 100,
+    default: ""
+  },
+  website: {
+    type: String,
+    match: [/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/, 'Please use a valid URL'],
+    default: ""
+  },
+  birthDate: {
+    type: Date
+  },
+  gender: {
+    type: String,
+    enum: ["male", "female", "other", "prefer-not-to-say", ""],
+    default: ""
+  },
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  },
+  updatedAt: { 
+    type: Date, 
+    default: Date.now 
+  }
+}, {
+  timestamps: true, // Auto-manage createdAt and updatedAt
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
 export default mongoose.model('User', UserSchema);

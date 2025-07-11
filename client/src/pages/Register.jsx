@@ -10,12 +10,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { RiEyeLine, RiEyeOffLine, RiGithubFill, RiGoogleFill, RiCheckLine, RiCloseLine, RiPlayCircleLine } from "react-icons/ri"
 import { Progress } from "@/components/ui/progress"
+import { toast } from "react-toastify"
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
-    fullName: "",
     username: "",
     email: "",
     password: "",
@@ -46,33 +46,41 @@ const Register = () => {
     setError("")
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match")
+      const errorMsg = "Passwords do not match"
+      setError(errorMsg)
+      toast.error(errorMsg)
       setLoading(false)
       return
     }
 
     if (passwordStrength < 50) {
-      setError("Password is too weak")
+      const errorMsg = "Password is too weak"
+      setError(errorMsg)
+      toast.error(errorMsg)
       setLoading(false)
       return
     }
 
     if (!formData.agreeToTerms) {
-      setError("You must agree to the Terms of Service")
+      const errorMsg = "You must agree to the Terms of Service"
+      setError(errorMsg)
+      toast.error(errorMsg)
       setLoading(false)
       return
     }
 
     try {
       await register({
-        name: formData.fullName,
         username: formData.username,
         email: formData.email,
         password: formData.password,
       })
-      navigate("/dashboard")
+      toast.success("Registration successful! Redirecting...")
+      navigate("/login", { replace: true })
     } catch (err) {
-      setError(err.message || "Registration failed. Please try again.")
+      const errorMsg = err.message || "Registration failed. Please try again."
+      setError(errorMsg)
+      toast.error(errorMsg)
     } finally {
       setLoading(false)
     }
@@ -105,48 +113,28 @@ const Register = () => {
               {error}
             </div>
           )}
-          <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" className="border-gray-200 text-gray-600 hover:bg-gray-100">
-              <RiGithubFill className="mr-2" /> GitHub
-            </Button>
-            <Button variant="outline" className="border-gray-200 text-gray-600 hover:bg-gray-100">
-              <RiGoogleFill className="mr-2" /> Google
-            </Button>
-          </div>
+          
           <div className="relative flex items-center">
             <div className="flex-grow border-t border-gray-200"></div>
-            <span className="flex-shrink mx-4 text-xs text-gray-500 uppercase">Or continue with email</span>
+            <span className="flex-shrink mx-4 text-xs text-gray-500 uppercase">Sign up with email</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
+          
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-gray-600">Full Name</Label>
-                <Input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="username" className="text-gray-600">Username</Label>
-                <Input
-                  id="username"
-                  name="username"
-                  type="text"
-                  placeholder="johndoe"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-gray-600">Username</Label>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="johndoe"
+                value={formData.username}
+                onChange={handleInputChange}
+                className="border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
+                required
+              />
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-600">Email</Label>
               <Input
@@ -160,6 +148,7 @@ const Register = () => {
                 required
               />
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-600">Password</Label>
               <div className="relative">
@@ -198,6 +187,7 @@ const Register = () => {
                 </div>
               )}
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-gray-600">Confirm Password</Label>
               <div className="relative">
@@ -231,6 +221,7 @@ const Register = () => {
                 )}
               </div>
             </div>
+            
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="agreeToTerms"
@@ -250,6 +241,7 @@ const Register = () => {
                 </Link>
               </Label>
             </div>
+            
             <Button
               type="submit"
               className="w-full bg-purple-500 hover:bg-purple-600 text-white"
@@ -258,6 +250,7 @@ const Register = () => {
               {loading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
+          
           <div className="text-center text-sm text-gray-600">
             Already have an account?{" "}
             <Link to="/login" className="text-purple-500 font-medium hover:underline">

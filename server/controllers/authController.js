@@ -52,7 +52,7 @@ export const login = async (req, res) => {
 
     // Generate JWT
     const payload = { id: user.id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1m' });
 
     res.json({ token });
   } catch (err) {
@@ -64,10 +64,67 @@ export const login = async (req, res) => {
 // @desc    Get current user
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user.id)
     res.json(user);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.message); 
     res.status(500).send('Server Error');
   }
 };
+
+export const logout = async (req, res) => {
+  try {
+    
+    res.status(200).json({ 
+      success: true,
+      message: 'Logged out successfully' 
+    });
+  } catch (err) {
+    console.error('Logout error:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error during logout' 
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const updates = {}
+    
+    // Text fields
+    if (req.body.username) updates.username = req.body.username
+    if (req.body.bio) updates.bio = req.body.bio
+    if (req.body.location) updates.location = req.body.location
+    if (req.body.website) updates.website = req.body.website
+
+    // Handle file upload
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'profile-photos',
+        width: 500,
+        height: 500,
+        crop: 'fill'
+      })
+      updates.profilePhoto = result.secure_url
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select('-password')
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      user
+    })
+  } catch (err) {
+    console.error('Update profile error:', err)
+    res.status(400).json({
+      success: false,
+      message: err.message || 'Error updating profile'
+    })
+  }
+}

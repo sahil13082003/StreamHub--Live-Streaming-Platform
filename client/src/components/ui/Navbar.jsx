@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useContext } from "react"
+import { useState, useContext, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { AuthContext } from "../../context/AuthContext"
 import { Button } from "@/components/ui/button"
@@ -14,17 +14,41 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { RiHome4Line, RiDashboardLine, RiPlayCircleLine, RiSearchLine, RiNotification3Line, RiUser3Line, RiSettings3Line, RiLogoutBoxRLine } from "react-icons/ri"
+import { toast } from "react-toastify"
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("")
-  const [showUserMenu, setShowUserMenu] = useState(false)
-  const { user, isAuthenticated, logout } = useContext(AuthContext)
+  const { user, token, logout } = useContext(AuthContext)
   const navigate = useNavigate()
 
+  const getAvatarInitials = (username) => {
+    if (!username) return "U";
+    
+    const words = username.trim().split(/\s+/);
+    
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+    
+    return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
+  };
+
   const handleLogout = () => {
-    logout()
-    navigate("/")
+    try {
+      logout()
+      toast.success("Logged out successfully!")
+      navigate("/login", { replace: true })
+    } catch (err) {
+      toast.error("Failed to logout. Please try again.")
+      console.error("Logout error:", err)
+    }
   }
+
+  // Debugging: Log user and token data
+  useEffect(() => {
+    console.log("User data from AuthContext:", user);
+    console.log("Token from AuthContext:", token);
+  }, [user, token]);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -40,11 +64,11 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="hidden items-center gap-6 md:flex">
-          <Link to="/" className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-purple-500 transition-colors">
+            <Link to="/" className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-purple-500 transition-colors">
               <RiHome4Line size={16} />
               Home
             </Link>
-            {isAuthenticated && (
+            {token && (
               <>
                 <Link to="/dashboard" className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-purple-500 transition-colors">
                   <RiDashboardLine size={16} />
@@ -74,7 +98,7 @@ const Navbar = () => {
 
           {/* Right Side */}
           <div className="flex items-center gap-4">
-            {isAuthenticated ? (
+            {token ? (
               <>
                 {/* Notifications */}
                 <Button variant="ghost" size="icon" className="relative text-gray-600 hover:bg-gray-100">
@@ -85,25 +109,18 @@ const Navbar = () => {
                 </Button>
 
                 {/* User Menu */}
-                <DropdownMenu open={showUserMenu} onOpenChange={setShowUserMenu}>
+                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-white">
-                        {user?.avatar ? (
-                          <img src={user.avatar || "/placeholder.svg"} alt={user.name} className="h-full w-full object-cover rounded-full" />
-                        ) : (
-                          <span>{user?.name?.charAt(0) || "U"}</span>
-                        )}
+                        {getAvatarInitials(user?.username)}
                       </div>
-                      {user?.isStreaming && (
-                        <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-red-500 border-2 border-white"></div>
-                      )}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 bg-white border-gray-200">
                     <DropdownMenuLabel className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-gray-900">{user?.name}</span>
-                      <span className="text-xs text-gray-500">{user?.isStreaming ? "Currently streaming" : "Offline"}</span>
+                      <span className="text-sm font-medium text-gray-900">{user?.username || "User"}</span>
+                      <span className="text-xs text-gray-500">{user?.email}</span>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-gray-200" />
                     <DropdownMenuItem asChild>
@@ -119,7 +136,10 @@ const Navbar = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-gray-200" />
-                    <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-sm text-gray-600 hover:bg-gray-50">
+                    <DropdownMenuItem 
+                      onClick={handleLogout} 
+                      className="flex items-center gap-2 text-sm text-gray-600 hover:bg-gray-50 cursor-pointer"
+                    >
                       <RiLogoutBoxRLine size={16} />
                       Log out
                     </DropdownMenuItem>
