@@ -10,6 +10,8 @@ import StreamPage from "./pages/StreamPage"
 import "./App.css"
 import Navbar from "./components/ui/Navbar"
 import ProfilePage from "./pages/Profile"
+import VideoPage from "./pages/VideoPage"
+import VideoDetailPage from "./pages/VideoDetailPage"
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
               {/* <Route path="/dashboard" element={<Dashboard />} /> */}
               <Route path="/stream" element={<StreamPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/video" element={<VideoPage />} />
+              <Route path="/video/:id" element={<VideoDetailPage />} />
             </Routes>
           </div>
         </Router>

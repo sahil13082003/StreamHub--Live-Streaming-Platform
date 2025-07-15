@@ -46,8 +46,8 @@ const Navbar = () => {
 
   // Debugging: Log user and token data
   useEffect(() => {
-    console.log("User data from AuthContext:", user);
-    console.log("Token from AuthContext:", token);
+    // console.log("User data from AuthContext:", user);
+    // console.log("Token from AuthContext:", token);
   }, [user, token]);
 
   return (

@@ -1,6 +1,8 @@
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import cloudinary from '../utils/cloudinary.js';
+import fs from 'fs';
 
 // @desc    Register a new user
 export const register = async (req, res) => {
@@ -52,7 +54,7 @@ export const login = async (req, res) => {
 
     // Generate JWT
     const payload = { id: user.id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1m' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.json({ token });
   } catch (err) {
@@ -67,64 +69,82 @@ export const getMe = async (req, res) => {
     const user = await User.findById(req.user.id)
     res.json(user);
   } catch (err) {
-    console.error(err.message); 
+    console.error(err.message);
     res.status(500).send('Server Error');
   }
 };
 
 export const logout = async (req, res) => {
   try {
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       success: true,
-      message: 'Logged out successfully' 
+      message: 'Logged out successfully'
     });
   } catch (err) {
     console.error('Logout error:', err);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Server error during logout' 
+      message: 'Server error during logout'
     });
   }
 };
 
+
 export const updateProfile = async (req, res) => {
   try {
-    const updates = {}
-    
-    // Text fields
-    if (req.body.username) updates.username = req.body.username
-    if (req.body.bio) updates.bio = req.body.bio
-    if (req.body.location) updates.location = req.body.location
-    if (req.body.website) updates.website = req.body.website
+    const updates = {
+      username: req.body.username,
+      bio: req.body.bio,
+      location: req.body.location,
+      website: req.body.website
+    };
 
-    // Handle file upload
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: 'profile-photos',
-        width: 500,
-        height: 500,
-        crop: 'fill'
-      })
-      updates.profilePhoto = result.secure_url
+      try {
+        const result = await cloudinary.uploader.upload(
+          `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`,
+          {
+            folder: 'profile-photos',
+            resource_type: 'image',
+            timeout: 60000,
+            transformation: [
+              { width: 500, height: 500, crop: 'fill' },
+              { quality: 'auto:best' }
+            ]
+          }
+        );
+        console.log('Cloudinary upload result:', result);
+        updates.profilePhoto = result.secure_url;
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', JSON.stringify(uploadError, null, 2));
+        return res.status(400).json({
+          success: false,
+          message: `Cloudinary error: ${uploadError.message || 'Failed to upload image'}`,
+          errorDetails: uploadError
+        });
+      }
     }
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { $set: updates },
       { new: true, runValidators: true }
-    ).select('-password')
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Profile updated successfully',
       user
-    })
+    });
   } catch (err) {
-    console.error('Update profile error:', err)
+    console.error('Profile update error:', err);
     res.status(400).json({
       success: false,
-      message: err.message || 'Error updating profile'
-    })
+      message: err.message || 'Something went wrong!'
+    });
   }
-}
+};

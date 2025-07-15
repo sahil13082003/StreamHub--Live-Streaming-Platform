@@ -81,19 +81,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateProfile = async (formData) => {
-  try {
-    const response = await api.patch('/auth/profile', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    
-    setUser(prev => ({ ...prev, ...response.data.user }))
-    return response.data
-  } catch (err) {
-    throw new Error(err.response?.data?.message || 'Failed to update profile')
-  }
-}
+    try {
+      const response = await api.patch('/auth/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setUser((prev) => ({ ...prev, ...response.data.user }));
+      return response.data;
+    } catch (err) {
+      throw new Error(err.response?.data?.message || 'Failed to update profile');
+    }
+  };
 
   useEffect(() => {
     fetchUser();

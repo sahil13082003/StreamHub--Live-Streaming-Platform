@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useAuth } from '@/context/useAuth'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,8 @@ const ProfilePage = () => {
   const { user, updateProfile } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [previewImage, setPreviewImage] = useState(null)
-  const { register, handleSubmit, reset, formState: { errors } } = useForm()
+  const fileInputRef = useRef(null)
+  const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm()
 
   // Initialize form with user data
   useEffect(() => {
@@ -37,30 +38,53 @@ const ProfilePage = () => {
         setPreviewImage(reader.result)
       }
       reader.readAsDataURL(file)
+      // Manually set the file value for react-hook-form
+      setValue('profilePhoto', file)
     }
   }
 
-  const onSubmit = async (data) => {
-    setIsLoading(true)
-    try {
-      const formData = new FormData()
-      formData.append('username', data.username)
-      formData.append('bio', data.bio)
-      formData.append('location', data.location)
-      formData.append('website', data.website)
-      
-      if (data.profilePhoto[0]) {
-        formData.append('profilePhoto', data.profilePhoto[0])
-      }
-
-      await updateProfile(formData)
-      toast.success('Profile updated successfully!')
-    } catch (error) {
-      toast.error(error.message || 'Failed to update profile')
-    } finally {
-      setIsLoading(false)
+ const onSubmit = async (data) => {
+  setIsLoading(true);
+  try {
+    const formData = new FormData();
+    formData.append('username', data.username);
+    formData.append('bio', data.bio || '');
+    formData.append('location', data.location || '');
+    formData.append('website', data.website || '');
+    if (data.profilePhoto instanceof File) {
+      formData.append('profilePhoto', data.profilePhoto);
     }
+
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value instanceof File ? value.name : value);
+    }
+
+    const response = await updateProfile(formData);
+    if (response.success) {
+      toast.success('Profile updated successfully!');
+    } else {
+      throw new Error(response.message || 'Failed to update profile');
+    }
+  } catch (error) {
+    console.error('Profile update error:', error);
+    const message = error.response?.data?.message || error.message;
+    const details = error.response?.data?.errorDetails;
+    console.log('Error details:', details);
+    if (message.includes('Timeout')) {
+      toast.error('Image upload timed out. Please check your connection and try again.');
+    } else if (message.includes('Cloudinary')) {
+      toast.error(`Image upload failed: ${details?.message || message}`);
+    } else if (message.includes('Unauthorized')) {
+      toast.error('Please log in again.');
+    } else if (message.includes('file not found')) {
+      toast.error('Uploaded file could not be processed.');
+    } else {
+      toast.error(message || 'Failed to update profile');
+    }
+  } finally {
+    setIsLoading(false);
   }
+};
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -75,7 +99,7 @@ const ProfilePage = () => {
                   {user?.username?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <label 
+              <label
                 htmlFor="profilePhoto"
                 className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-100 transition-colors"
               >
@@ -83,9 +107,9 @@ const ProfilePage = () => {
                 <input
                   id="profilePhoto"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/gif"
                   className="hidden"
-                  {...register('profilePhoto')}
+                  ref={fileInputRef}
                   onChange={handleImageChange}
                 />
               </label>
@@ -105,7 +129,7 @@ const ProfilePage = () => {
                 </Label>
                 <Input
                   id="username"
-                  {...register('username', { 
+                  {...register('username', {
                     required: 'Username is required',
                     minLength: { value: 3, message: 'Username must be at least 3 characters' }
                   })}
@@ -166,8 +190,8 @@ const ProfilePage = () => {
             </div>
 
             <div className="flex justify-end pt-4 border-t border-gray-200">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
                 disabled={isLoading}
               >

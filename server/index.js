@@ -4,8 +4,11 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import { errorHandler } from './middlewares/errorMiddleware.js';
 import authRoutes from './routes/authRoutes.js';
+import videoRoutes from './routes/videoRoutes.js';
 import streamRoutes from './routes/streamRoutes.js';
 import { Server } from 'socket.io';
+import path from 'path';
+import fs from 'fs';
 
 // Load env vars
 dotenv.config();
@@ -16,6 +19,11 @@ connectDB();
 // Initialize Express
 const app = express();
 
+const uploadDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadDir)) {
+   fs.mkdirSync(uploadDir);
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -23,6 +31,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/streams', streamRoutes);
+app.use('/api/videos', videoRoutes);
 
 // Error handling
 app.use(errorHandler);
