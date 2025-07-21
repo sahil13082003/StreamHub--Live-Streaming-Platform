@@ -124,3 +124,17 @@ export const getVideo = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch video' })
   }
 }
+
+export const getVideosByUser = async (req, res) => {
+  try {
+    const videos = await Video.find({ uploader: req.params.userId })
+      .populate('uploader', 'name avatar')
+      .populate('category', 'name')
+      .sort({ createdAt: -1 })
+
+    res.json(videos)
+  } catch (error) {
+    console.error('Error fetching user videos:', error)
+    res.status(500).json({ error: 'Failed to fetch user videos' })
+  }
+}

@@ -19,11 +19,13 @@
     "cors": "^2.8.5",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
     "get-video-duration": "^4.1.0",
     "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.1",
     "multer": "^2.0.1",
+    "node-media-server": "^4.0.18",
     "socket.io": "^4.8.1",
     "uuid": "^11.1.0"
   },

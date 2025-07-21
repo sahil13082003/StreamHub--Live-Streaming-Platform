@@ -103,7 +103,7 @@ const Home = () => {
             </div>
             <div className="relative">
               <div className="relative aspect-video rounded-xl overflow-hidden border border-gray-200 shadow-lg">
-                <img src="https://via.placeholder.com/600x400" alt="Live streaming preview" className="w-full h-full object-cover" />
+                <img src="https://antmedia.io/wp-content/uploads/2023/04/gamer-chair-with-multicolored-neon-lights-1-2048x1365.jpg" alt="Live streaming preview" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Button size="icon" className="bg-purple-500 hover:bg-purple-600 text-white rounded-full w-16 h-16 transform hover:scale-110 transition-transform">
                     <RiPlayCircleLine size={24} />

@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useContext } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"
@@ -11,6 +10,13 @@ import { Label } from "@/components/ui/label"
 import { RiEyeLine, RiEyeOffLine, RiGithubFill, RiGoogleFill, RiCheckLine, RiCloseLine, RiPlayCircleLine } from "react-icons/ri"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "react-toastify"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -20,6 +26,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "viewer", // Default role
     agreeToTerms: false,
   })
   const [loading, setLoading] = useState(false)
@@ -74,6 +81,7 @@ const Register = () => {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        role: formData.role,
       })
       toast.success("Registration successful! Redirecting...")
       navigate("/login", { replace: true })
@@ -105,7 +113,7 @@ const Register = () => {
             <span className="text-xl font-bold text-gray-900">StreamHub</span>
           </Link>
           <CardTitle className="text-2xl font-bold text-gray-900">Create Your Account</CardTitle>
-          <CardDescription className="text-gray-600">Join thousands of creators on StreamHub</CardDescription>
+          <CardDescription className="text-gray-600">Join thousands of streamers and viewers on StreamHub</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
@@ -147,6 +155,30 @@ const Register = () => {
                 className="border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
                 required
               />
+            </div>
+
+            {/* Role Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="role" className="text-gray-600">I want to join as a</Label>
+              <Select
+                name="role"
+                value={formData.role}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
+                required
+              >
+                <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-500/20">
+                  <SelectValue placeholder="Select your role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="streamer">Streamer</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500">
+                {formData.role === 'streamer' 
+                  ? "Streamers can create live streams and upload videos"
+                  : "Viewers can watch content and follow streamers"}
+              </p>
             </div>
             
             <div className="space-y-2">

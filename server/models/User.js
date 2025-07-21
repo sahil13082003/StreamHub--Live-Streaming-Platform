@@ -5,14 +5,16 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["viewer", "streamer", "admin"], default: "viewer" },
-profilePicture: { 
-    type: String, 
-    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png" 
+  isLive: { type: Boolean, default: false },
+  currentStream: { type: mongoose.Schema.Types.ObjectId, ref: 'Stream', default: null },
+  profilePicture: {
+    type: String,
+    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png"
   },
   // Profile Information
-  profilePicture: { 
-    type: String, 
-    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png" 
+  profilePicture: {
+    type: String,
+    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png"
   },
   bannerImage: {
     type: String,
@@ -46,15 +48,15 @@ profilePicture: {
     enum: ["male", "female", "other", "prefer-not-to-say", ""],
     default: ""
   },
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
+  createdAt: {
+    type: Date,
+    default: Date.now
   },
-  updatedAt: { 
-    type: Date, 
-    default: Date.now 
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
 }, {
   timestamps: true, // Auto-manage createdAt and updatedAt

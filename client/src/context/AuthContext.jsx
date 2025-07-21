@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         username: userData.username,
         email: userData.email,
         password: userData.password,
-        role: "viewer" // Default role
+        role: userData.role || 'viewer', // Default to viewer if not specified
       };
 
       const res = await api.post('/auth/register', dataToSend);

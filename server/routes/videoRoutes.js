@@ -5,7 +5,8 @@ import {
   getVideos, 
   getVideo, 
   getVideosByCategory,
-  getCategories 
+  getCategories, 
+  getVideosByUser
 } from '../controllers/videoController.js'
 import { protect } from '../middlewares/authMiddleware.js'
 
@@ -22,5 +23,6 @@ router.get('/', getVideos)
 router.get('/categories', getCategories)
 router.get('/category/:categoryId', getVideosByCategory)
 router.get('/:id', getVideo)
+router.get('/user/:userId', protect, getVideosByUser)
 
 export default router

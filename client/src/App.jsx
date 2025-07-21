@@ -12,6 +12,13 @@ import Navbar from "./components/ui/Navbar"
 import ProfilePage from "./pages/Profile"
 import VideoPage from "./pages/VideoPage"
 import VideoDetailPage from "./pages/VideoDetailPage"
+import VideoUploadPage from "./pages/VideoUploadPage"
+import CreatorsPage from "./pages/CreatorsPage"
+// import CreatorProfilePage from "./pages/CreatorProfilePage"
+import StreamSetup from "./pages/stream/StreamSetup"
+import Broadcast from "./pages/stream/Broadcast"
+import ViewStream from "./pages/stream/ViewStream"
+// import Watch from "./pages/stream/Watch"
 
 function App() {
   return (
@@ -29,6 +36,14 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/video" element={<VideoPage />} />
               <Route path="/video/:id" element={<VideoDetailPage />} />
+              <Route path="/video/upload" element={<VideoUploadPage />} />
+              <Route path="/streamers" element={<CreatorsPage />} />
+              <Route path="/streamer/:id" element={<div>Streamer Profile Placeholder</div>} />
+              <Route path="/stream/setup" element={<StreamSetup />} />
+              <Route path="/stream/broadcast/:streamId" element={<Broadcast />} />
+              <Route path="/stream/view/:streamId" element={<ViewStream />} />
+              {/* <Route path="/stream/watch" element={<Watch />} /> */}
+
             </Routes>
           </div>
         </Router>
