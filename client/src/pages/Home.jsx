@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { RiPlayCircleLine, RiEyeLine, RiPulseLine, RiShieldCheckLine, RiGlobalLine } from "react-icons/ri"
 import Navbar from "../components/ui/Navbar"
+import { toast } from "react-toastify"
 
 const Home = () => {
   const { user, token } = useContext(AuthContext) // Access user and token from AuthContext
@@ -16,10 +17,25 @@ const Home = () => {
 
   // Check authentication status after user and token are resolved
   useEffect(() => {
-    // Simulate a delay to allow AuthContext to fully resolve (or use actual loading state from AuthContext)
+    // Simulate a delay to allow AuthContext to fully resolve
     const checkAuth = setTimeout(() => {
       if (!token || !user) {
-        navigate("/login", { replace: true })
+        // Show toast notification for unauthenticated users
+        toast.info(
+          <div className="flex flex-col gap-2">
+            <span>Login Required: Please log in to access the StreamHub homepage.</span>  
+          </div>,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+          }
+        )
+        // Optionally redirect to a public page (e.g., "/") after showing the toast
+        navigate("/", { replace: true })
       }
       setIsAuthChecked(true)
     }, 100) // Small delay to allow AuthContext to update
@@ -27,9 +43,18 @@ const Home = () => {
     return () => clearTimeout(checkAuth)
   }, [token, user, navigate])
 
-  // Optionally, show a loading state while checking authentication
+  // Show loading state while checking authentication
   if (!isAuthChecked) {
-    return <div>Loading...</div> // You can replace this with a proper loading spinner
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-white to-gray-50">
+        <div className="text-gray-600 text-lg">Loading...</div>
+      </div>
+    )
+  }
+
+  // If user is not authenticated, render nothing (toast handles the message)
+  if (!token || !user) {
+    return null
   }
 
   const featuredStreams = [
