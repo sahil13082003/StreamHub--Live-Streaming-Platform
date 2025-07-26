@@ -34,7 +34,7 @@ const Login = () => {
     try {
       await login(formData.email, formData.password)
       toast.success("Login successful! Redirecting...")
-      navigate("/", { replace: true })
+      navigate("/home", { replace: true })
     } catch (err) {
       const errorMsg = err.message || "Login failed. Please check your credentials."
       setError(errorMsg)
@@ -56,7 +56,7 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-gray-200 shadow-lg">
         <CardHeader className="text-center">
-          <Link to="/" className="flex items-center justify-center gap-2 mb-4">
+          <Link to="/home" className="flex items-center justify-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500 text-white">
               <RiPlayCircleLine size={20} />
             </div>
@@ -71,13 +71,13 @@ const Login = () => {
               {error}
             </div>
           )}
-          
+
           <div className="relative flex items-center">
             <div className="flex-grow border-t border-gray-200"></div>
             <span className="flex-shrink mx-4 text-xs text-gray-500 uppercase">Sign in with email</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-600">Email</Label>
@@ -92,7 +92,7 @@ const Login = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-600">Password</Label>
               <div className="relative">
@@ -117,7 +117,7 @@ const Login = () => {
                 </Button>
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -133,16 +133,16 @@ const Login = () => {
                 Forgot password?
               </Link>
             </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-purple-500 hover:bg-purple-600 text-white" 
+
+            <Button
+              type="submit"
+              className="w-full bg-purple-500 hover:bg-purple-600 text-white"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"} <RiArrowRightLine className="ml-2" />
             </Button>
           </form>
-          
+
           <div className="text-center text-sm text-gray-600">
             Don't have an account?{" "}
             <Link to="/register" className="text-purple-500 font-medium hover:underline">

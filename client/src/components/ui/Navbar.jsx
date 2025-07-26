@@ -13,14 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { 
-  RiHome4Line, 
-  RiDashboardLine, 
-  RiPlayCircleLine, 
-  RiSearchLine, 
-  RiNotification3Line, 
-  RiUser3Line, 
-  RiSettings3Line, 
+import {
+  RiHome4Line,
+  RiDashboardLine,
+  RiPlayCircleLine,
+  RiSearchLine,
+  RiNotification3Line,
+  RiUser3Line,
+  RiSettings3Line,
   RiLogoutBoxRLine,
   RiHeartFill,
   RiUserFollowFill,
@@ -85,7 +85,7 @@ const Navbar = () => {
   const showNotificationToast = (notification) => {
     const message = getNotificationMessage(notification)
     const icon = getNotificationIcon(notification.type, "text-lg")
-    
+
     toast.info(
       <div className="flex items-center gap-2">
         {icon}
@@ -124,7 +124,7 @@ const Navbar = () => {
   const markAsRead = async (notificationId) => {
     try {
       await axios.patch(`/notifications/${notificationId}/read`)
-      setNotifications(notifications.map(n => 
+      setNotifications(notifications.map(n =>
         n._id === notificationId ? { ...n, read: true } : n
       ))
       setUnreadCount(prev => prev - 1)
@@ -145,7 +145,7 @@ const Navbar = () => {
 
   const getNotificationIcon = (type, className = "") => {
     const baseClass = `${className} mr-2`
-    switch(type) {
+    switch (type) {
       case 'follow':
         return <RiUserFollowFill className={`${baseClass} text-blue-500`} />
       case 'like':
@@ -158,7 +158,7 @@ const Navbar = () => {
   }
 
   const getNotificationMessage = (notification) => {
-    switch(notification.type) {
+    switch (notification.type) {
       case 'follow':
         return `${notification.sender.username} started following you`
       case 'like':
@@ -174,8 +174,8 @@ const Navbar = () => {
     if (!notification.read) {
       markAsRead(notification._id)
     }
-    
-    switch(notification.type) {
+
+    switch (notification.type) {
       case 'follow':
         navigate(`/streamer/${notification.sender._id}`)
         break
@@ -208,7 +208,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 text-gray-900">
+          <Link to="/home" className="flex items-center gap-2 text-gray-900">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500 text-white">
               <RiPlayCircleLine size={20} />
             </div>
@@ -217,12 +217,13 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="hidden items-center gap-6 md:flex">
-            <Link to="/" className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-purple-500 transition-colors">
-              <RiHome4Line size={16} />
-              Home
-            </Link>
+
             {token && (
               <>
+                <Link to="/home" className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-purple-500 transition-colors">
+                  <RiHome4Line size={16} />
+                  Home
+                </Link>
                 <Link to="/video" className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-purple-500 transition-colors">
                   <RiDashboardLine size={16} />
                   Videos
@@ -273,9 +274,9 @@ const Navbar = () => {
                     <DropdownMenuLabel className="flex justify-between items-center sticky top-0 bg-white z-10">
                       <span className="font-semibold">Notifications</span>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           className="h-6 px-2 text-xs"
                           onClick={(e) => {
                             e.preventDefault()
@@ -287,10 +288,10 @@ const Navbar = () => {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    
+
                     {notifications.length > 0 ? (
                       notifications.map(notification => (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           key={notification._id}
                           className={`flex gap-3 items-start p-3 ${!notification.read ? 'bg-gray-50' : ''}`}
                           onClick={() => handleNotificationClick(notification)}
@@ -310,7 +311,7 @@ const Navbar = () => {
                             {!notification.read && (
                               <span className="h-2 w-2 rounded-full bg-purple-500" />
                             )}
-                            <button 
+                            <button
                               className="text-gray-400 hover:text-gray-600"
                               onClick={(e) => deleteNotification(notification._id, e)}
                             >
@@ -355,8 +356,8 @@ const Navbar = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-gray-200" />
-                    <DropdownMenuItem 
-                      onClick={handleLogout} 
+                    <DropdownMenuItem
+                      onClick={handleLogout}
                       className="flex items-center gap-2 text-sm text-gray-600 hover:bg-gray-50 cursor-pointer"
                     >
                       <RiLogoutBoxRLine size={16} />

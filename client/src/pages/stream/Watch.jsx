@@ -27,7 +27,7 @@ const Watch = () => {
       try {
         const response = await axios.get(`/streams/${streamId}`)
         if (!response.data.isLive) {
-          navigate("/")
+          navigate("/home")
           toast.error("This stream has ended")
           return
         }
@@ -36,7 +36,7 @@ const Watch = () => {
       } catch (error) {
         console.error("Failed to fetch stream:", error)
         toast.error("Failed to load stream")
-        navigate("/")
+        navigate("/home")
       } finally {
         setLoading(false)
       }
@@ -48,15 +48,15 @@ const Watch = () => {
     ws.current = new WebSocket(`${process.env.NODE_ENV === 'development' ? 'ws' : 'wss'}://${window.location.host}/ws/watch/${streamId}`)
 
     ws.current.onopen = () => {
-      ws.current.send(JSON.stringify({ 
-        type: "AUTH", 
-        token: localStorage.getItem("token") 
+      ws.current.send(JSON.stringify({
+        type: "AUTH",
+        token: localStorage.getItem("token")
       }))
     }
 
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      switch(data.type) {
+      switch (data.type) {
         case "VIEWER_COUNT":
           setViewerCount(data.count)
           break
@@ -65,7 +65,7 @@ const Watch = () => {
           break
         case "STREAM_ENDED":
           toast.info("Stream has ended")
-          navigate("/")
+          navigate("/home")
           break
       }
     }
@@ -147,7 +147,7 @@ const Watch = () => {
               >
                 <source src={`/stream/${streamId}/playlist.m3u8`} type="application/x-mpegURL" />
               </video>
-              
+
               {/* Stream Info Bar */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                 <h1 className="text-xl font-bold">{stream.title}</h1>
@@ -165,8 +165,8 @@ const Watch = () => {
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700">
-                  <img 
-                    src={stream.streamer.profilePhoto} 
+                  <img
+                    src={stream.streamer.profilePhoto}
                     alt={stream.streamer.username}
                     className="w-full h-full object-cover"
                   />

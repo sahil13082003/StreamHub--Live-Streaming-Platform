@@ -106,7 +106,7 @@ const Register = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-gray-200 shadow-lg">
         <CardHeader className="text-center">
-          <Link to="/" className="flex items-center justify-center gap-2 mb-4">
+          <Link to="/home" className="flex items-center justify-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500 text-white">
               <RiPlayCircleLine size={20} />
             </div>
@@ -121,13 +121,13 @@ const Register = () => {
               {error}
             </div>
           )}
-          
+
           <div className="relative flex items-center">
             <div className="flex-grow border-t border-gray-200"></div>
             <span className="flex-shrink mx-4 text-xs text-gray-500 uppercase">Sign up with email</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username" className="text-gray-600">Username</Label>
@@ -142,7 +142,7 @@ const Register = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-600">Email</Label>
               <Input
@@ -175,12 +175,12 @@ const Register = () => {
                 </SelectContent>
               </Select>
               <p className="text-xs text-gray-500">
-                {formData.role === 'streamer' 
+                {formData.role === 'streamer'
                   ? "Streamers can create live streams and upload videos"
                   : "Viewers can watch content and follow streamers"}
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-600">Password</Label>
               <div className="relative">
@@ -219,7 +219,7 @@ const Register = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-gray-600">Confirm Password</Label>
               <div className="relative">
@@ -253,7 +253,7 @@ const Register = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="agreeToTerms"
@@ -273,7 +273,7 @@ const Register = () => {
                 </Link>
               </Label>
             </div>
-            
+
             <Button
               type="submit"
               className="w-full bg-purple-500 hover:bg-purple-600 text-white"
@@ -282,7 +282,7 @@ const Register = () => {
               {loading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
-          
+
           <div className="text-center text-sm text-gray-600">
             Already have an account?{" "}
             <Link to="/login" className="text-purple-500 font-medium hover:underline">

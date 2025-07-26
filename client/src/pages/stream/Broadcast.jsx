@@ -43,7 +43,7 @@ const Broadcast = () => {
         console.log("Stream data:", response.data);
         if (response.data.streamer._id !== user._id) {
           toast.error("You are not authorized to broadcast this stream");
-          navigate("/");
+          navigate("/home");
           return;
         }
         setStream(response.data);
