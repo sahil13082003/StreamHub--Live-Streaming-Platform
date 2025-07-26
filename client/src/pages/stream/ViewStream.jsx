@@ -25,56 +25,64 @@ const ViewStream = () => {
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 3;
 
-  const connectWebSocket = () => {
-    const wsProtocol = process.env.NODE_ENV === "development" ? "ws" : "wss";
-    ws.current = new WebSocket(`${wsProtocol}://localhost:5000/ws/view/${streamId}`);
-    console.log('Attempting WebSocket connection to:', `${wsProtocol}://localhost:5000/ws/view/${streamId}`);
+  const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 
-    ws.current.onopen = () => {
-      console.log('WebSocket connected for streamId:', streamId);
-      reconnectAttempts.current = 0;
-      const token = localStorage.getItem("token");
-      if (token) {
-        console.log('Sending AUTH message with token');
-        ws.current.send(JSON.stringify({ type: "AUTH", token }));
-      } else {
-        console.error("No token found for WebSocket authentication");
-        toast.error("Authentication required for WebSocket");
-        ws.current.close();
-      }
-    };
+const connectWebSocket = () => {
+  const wsProtocol = process.env.NODE_ENV === "development" ? "ws" : "wss";
+  const wsUrl = `${wsProtocol}://${WS_BASE_URL}/ws/view/${streamId}`;
 
-    ws.current.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('WebSocket message received:', data);
-        if (data.type === "VIEWER_COUNT") {
-          setViewerCount(data.count);
-        } else if (data.type === "CHAT_MESSAGE") {
-          setMessages((prev) => [...prev, { user: data.user, message: data.message }]);
-        }
-      } catch (err) {
-        console.error('WebSocket message parsing error:', err);
-      }
-    };
+  ws.current = new WebSocket(wsUrl);
+  console.log('Attempting WebSocket connection to:', wsUrl);
 
-    ws.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      toast.error("WebSocket connection failed");
-    };
+  ws.current.onopen = () => {
+    console.log('WebSocket connected for streamId:', streamId);
+    reconnectAttempts.current = 0;
 
-    ws.current.onclose = (event) => {
-      console.log('WebSocket closed:', { code: event.code, reason: event.reason });
-      if (reconnectAttempts.current < maxReconnectAttempts) {
-        console.log(`Reconnecting WebSocket, attempt ${reconnectAttempts.current + 1}`);
-        reconnectAttempts.current += 1;
-        setTimeout(connectWebSocket, 3000);
-      } else {
-        console.error('Max WebSocket reconnect attempts reached');
-        toast.error("Unable to connect to WebSocket server");
-      }
-    };
+    const token = localStorage.getItem("token");
+    if (token) {
+      console.log('Sending AUTH message with token');
+      ws.current.send(JSON.stringify({ type: "AUTH", token }));
+    } else {
+      console.error("No token found for WebSocket authentication");
+      toast.error("Authentication required for WebSocket");
+      ws.current.close();
+    }
   };
+
+  ws.current.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      console.log('WebSocket message received:', data);
+
+      if (data.type === "VIEWER_COUNT") {
+        setViewerCount(data.count);
+      } else if (data.type === "CHAT_MESSAGE") {
+        setMessages((prev) => [...prev, { user: data.user, message: data.message }]);
+      }
+    } catch (err) {
+      console.error('WebSocket message parsing error:', err);
+    }
+  };
+
+  ws.current.onerror = (error) => {
+    console.error('WebSocket error:', error);
+    toast.error("WebSocket connection failed");
+  };
+
+  ws.current.onclose = (event) => {
+    console.log('WebSocket closed:', { code: event.code, reason: event.reason });
+
+    if (reconnectAttempts.current < maxReconnectAttempts) {
+      console.log(`Reconnecting WebSocket, attempt ${reconnectAttempts.current + 1}`);
+      reconnectAttempts.current += 1;
+      setTimeout(connectWebSocket, 3000);
+    } else {
+      console.error('Max WebSocket reconnect attempts reached');
+      toast.error("Unable to connect to WebSocket server");
+    }
+  };
+};
+
 
   useEffect(() => {
     if (!user) {
@@ -119,6 +127,8 @@ const ViewStream = () => {
     };
   }, [streamId, user, navigate]);
 
+  const STREAM_BASE_URL = import.meta.env.VITE_STREAM_BASE_URL;
+
   useEffect(() => {
     if (stream && videoRef.current) {
       // Initialize video.js player with HLS stream
@@ -126,13 +136,15 @@ const ViewStream = () => {
         controls: true,
         autoplay: true,
         muted: true,
-        sources: [{
-          src: `http://localhost:5000/stream/${streamId}/hls/master.m3u8`, // Adjust based on your streaming server
-          type: 'application/x-mpegURL',
-        }],
+        sources: [
+          {
+            src: `${STREAM_BASE_URL}/stream/${streamId}/hls/master.m3u8`,
+            type: 'application/x-mpegURL',
+          },
+        ],
       });
     }
-  }, [stream, streamId]);
+  }, [stream, videoRef]);
 
   const sendChatMessage = () => {
     if (chatMessage.trim() && ws.current?.readyState === WebSocket.OPEN) {

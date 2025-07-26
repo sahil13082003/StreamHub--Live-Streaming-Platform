@@ -59,21 +59,23 @@ const Broadcast = () => {
 
     fetchStream();
 
-    // Setup WebSocket
-    const wsProtocol = process.env.NODE_ENV === "development" ? "ws" : "wss";
-    // Use backend port (5000) instead of frontend port (5173)
-    ws.current = new WebSocket(`${wsProtocol}://localhost:5000/ws/broadcast/${streamId}`);
+    const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
+const wsProtocol = process.env.NODE_ENV === "development" ? "ws" : "wss";
 
-    ws.current.onopen = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        ws.current.send(JSON.stringify({ type: "AUTH", token }));
-      } else {
-        console.error("No token found for WebSocket authentication");
-        toast.error("Authentication required for WebSocket");
-        ws.current.close();
-      }
-    };
+// Construct full WebSocket URL using env variable
+const wsUrl = `${wsProtocol}://${WS_BASE_URL}/ws/broadcast/${streamId}`;
+ws.current = new WebSocket(wsUrl);
+
+ws.current.onopen = () => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    ws.current.send(JSON.stringify({ type: "AUTH", token }));
+  } else {
+    console.error("No token found for WebSocket authentication");
+    toast.error("Authentication required for WebSocket");
+    ws.current.close();
+  }
+};
 
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // baseURL: 'stream-hub-live-streaming-platform-alpha.vercel.app/api',
-  baseURL: 'http://localhost:5000/api', // Change to your backend URL
+  
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Add token to requests
