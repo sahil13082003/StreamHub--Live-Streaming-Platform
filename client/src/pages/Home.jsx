@@ -1,6 +1,8 @@
 "use client"
 
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "../context/AuthContext" // Adjust the path based on your project structure
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +10,28 @@ import { RiPlayCircleLine, RiEyeLine, RiPulseLine, RiShieldCheckLine, RiGlobalLi
 import Navbar from "../components/ui/Navbar"
 
 const Home = () => {
+  const { user, token } = useContext(AuthContext) // Access user and token from AuthContext
+  const navigate = useNavigate()
+  const [isAuthChecked, setIsAuthChecked] = useState(false) // Track if auth check is complete
+
+  // Check authentication status after user and token are resolved
+  useEffect(() => {
+    // Simulate a delay to allow AuthContext to fully resolve (or use actual loading state from AuthContext)
+    const checkAuth = setTimeout(() => {
+      if (!token || !user) {
+        navigate("/login", { replace: true })
+      }
+      setIsAuthChecked(true)
+    }, 100) // Small delay to allow AuthContext to update
+
+    return () => clearTimeout(checkAuth)
+  }, [token, user, navigate])
+
+  // Optionally, show a loading state while checking authentication
+  if (!isAuthChecked) {
+    return <div>Loading...</div> // You can replace this with a proper loading spinner
+  }
+
   const featuredStreams = [
     {
       id: 1,
@@ -61,10 +85,8 @@ const Home = () => {
   ]
 
   return (
-    
     <div className="min-h-screen p-10 bg-gradient-to-br from-purple-100 via-white to-gray-50">
       {/* Hero Section */}
-      
       <section className=" ">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
