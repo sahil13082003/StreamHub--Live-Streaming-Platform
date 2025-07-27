@@ -9,12 +9,12 @@ const UserSchema = new mongoose.Schema({
   currentStream: { type: mongoose.Schema.Types.ObjectId, ref: 'Stream', default: null },
   profilePicture: {
     type: String,
-    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png"
+    default: "https://ik.imagekit.io/bjoxlpi7q/streamhub/thumbnails/Profile.png?updatedAt=1753584352350"
   },
   // Profile Information
   profilePicture: {
     type: String,
-    default: "https://res.cloudinary.com/your-cloud-name/image/upload/v1620000000/default-profile.png"
+    default: "https://ik.imagekit.io/bjoxlpi7q/streamhub/thumbnails/Profile.png?updatedAt=1753584352350"
   },
   bannerImage: {
     type: String,

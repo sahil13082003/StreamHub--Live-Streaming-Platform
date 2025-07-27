@@ -91,7 +91,7 @@ const StreamSetup = () => {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 rounded-full bg-red-100 text-red-600">
+          <div className="p-2 rounded-full bg-purple-100 text-purple-500">
             <RiLiveLine size={24} />
           </div>
           <h1 className="text-2xl font-bold">Go Live</h1>
@@ -102,11 +102,11 @@ const StreamSetup = () => {
             <Label htmlFor="title">Stream Title *</Label>
             <Input
               id="title"
-              name="title"
+              name="title" 
               placeholder="What are you streaming today?"
               value={formData.title}
               onChange={handleInputChange}
-              className="mt-2"
+              className="mt-2 "
               maxLength={100}
             />
           </div>
@@ -145,7 +145,7 @@ const StreamSetup = () => {
             </Select>
           </div>
 
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <input
               type="checkbox"
               id="isPrivate"
@@ -154,12 +154,12 @@ const StreamSetup = () => {
               className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
             />
             <Label htmlFor="isPrivate">Private Stream (Only followers can join)</Label>
-          </div>
+          </div> */}
 
           <div className="pt-4">
             <Button
               onClick={startStream}
-              className="w-full bg-red-500 hover:bg-red-600 gap-2"
+              className="w-full bg-purple-500 hover:bg-purple-700 gap-2 text-white"
               disabled={loading}
             >
               <RiLiveLine size={18} />
